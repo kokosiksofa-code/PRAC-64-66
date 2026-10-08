@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const sql = require('mssql/msnodesqlv8');
+const sql = require('mssql');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,12 +11,14 @@ app.use(cors());
 app.use(express.json());
 
 const dbConfig = {
-    connectionString:
-        `Driver={ODBC Driver 18 for SQL Server};` +
-        `Server=${process.env.DB_SERVER};` +
-        `Database=${process.env.DB_DATABASE};` +
-        `Trusted_Connection=Yes;` +
-        `TrustServerCertificate=Yes;`
+    user: process.env.DB_USER || 'sa',
+    password: process.env.DB_PASSWORD || 'ТвойПарольОтБазы',
+    server: process.env.DB_SERVER || 'localhost',
+    database: process.env.DB_DATABASE || 'LoveliDB',
+    options: {
+        encrypt: false,
+        trustServerCertificate: true
+    }
 };
 
 let pool;
