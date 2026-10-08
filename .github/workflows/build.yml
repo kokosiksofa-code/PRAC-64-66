@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest # Важно! Используем Windows из-за msnodesqlv8
+    runs-on: windows-latest 
 
     steps:
     - name: Checkout code
@@ -27,15 +27,18 @@ jobs:
       run: npm test
 
   build-and-push:
-    needs: test # Запустится только если тесты прошли
-    runs-on: ubuntu-latest # Сборка Docker может идти на Linux
+    needs: test 
+    runs-on: ubuntu-latest 
     permissions:
       contents: read
-      packages: write # Нужно для публикации образа в GHCR
+      packages: write 
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Lowercase repository name
+      run: echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
@@ -50,5 +53,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}/loveli-backend:latest
-          ghcr.io/${{ github.repository }}/loveli-backend:${{ github.sha }}
+          ghcr.io/${{ env.IMAGE_NAME }}/loveli-backend:latest
+          ghcr.io/${{ env.IMAGE_NAME }}/loveli-backend:${{ github.sha }}
